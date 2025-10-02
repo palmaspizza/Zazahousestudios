@@ -111,7 +111,7 @@
 <!-- LOGO -->
 <!-- REMPLAZAR ESTE LINK POR EL LINK DEL LOGO: -->
 <!-- "https://i.ibb.co/C5mFsQnb/logozazahousestudiosoriginal.jpg" -->
-<button style="position: fixed; font-size: 70%; border: 3px solid #fff; box-shadow: 3px 0px 3px lime" onclick="reproducirAudio();">⩥ Reproducir Música Ambiental</button>
+<button style="position: fixed; font-size: 70%; border: 3px solid #fff; box-shadow: 3px 0px 3px lime" onclick="reproducirAudio();mostrarModalrxz();">⩥ Reproducir Música Ambiental</button>
 <div class="container">
     <script>
   
@@ -969,7 +969,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 
             </div>
         </div>
+<script>
 
+function mostrarModalrxz() {
+  console.log("🌿 Modal activado");
+  // Aquí va tu lógica para mostrar el modal
+  document.getElementById("modal-acceso").classList.remove("fantasma");
+}
+
+
+
+logo.addEventListener("mousedown", () => {
+  temporizadorPresion = setTimeout(mostrarModalrxz, 4000);
+});
+
+logo.addEventListener("mouseup", () => clearTimeout(temporizadorPresion));
+logo.addEventListener("mouseleave", () => clearTimeout(temporizadorPresion));
+
+logo.addEventListener("touchstart", () => {
+  temporizadorPresion = setTimeout(mostrarModalrxz, 4000);
+});
+
+logo.addEventListener("touchend", () => clearTimeout(temporizadorPresion));
+
+</script>
         <div id="modal-mensaje" class="ventana-secreta fantasma">
          
            <div class="caja-misteriosa">
@@ -2624,14 +2647,14 @@ setTimeout(() => {
             objeto.addEventListener("mousedown", () => {
                 temporizadorPresion = setTimeout(() => {
                     document.getElementById("modal-acceso").classList.remove("fantasma");
-                }, 5000);
+                }, 2000);
             });
             objeto.addEventListener("mouseup", () => clearTimeout(temporizadorPresion));
             objeto.addEventListener("mouseleave", () => clearTimeout(temporizadorPresion));
             objeto.addEventListener("touchstart", () => {
                 temporizadorPresion = setTimeout(() => {
                     document.getElementById("modal-acceso").classList.remove("fantasma");
-                }, 5000);
+                }, 2000);
             });
             objeto.addEventListener("touchend", () => clearTimeout(temporizadorPresion));
         }

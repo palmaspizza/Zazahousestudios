@@ -111,7 +111,7 @@
 <!-- LOGO -->
 <!-- REMPLAZAR ESTE LINK POR EL LINK DEL LOGO: -->
 <!-- "https://i.ibb.co/C5mFsQnb/logozazahousestudiosoriginal.jpg" -->
-<button style="position: fixed; font-size: 70%; border: 3px solid #fff; box-shadow: 3px 0px 3px lime" onclick="reproducirAudio();mostrarModalrxz();">⩥ Reproducir Música Ambiental</button>
+<button style="position: fixed; font-size: 70%; border: 3px solid #fff; box-shadow: 3px 0px 3px lime" onclick="reproducirAudio();">⩥ Reproducir Música Ambiental</button>
 <div class="container">
     <script>
   
@@ -128,8 +128,10 @@
     reproducirAudio();
   }
 </script>
+<br><br>
+<button onclick="mostrarModalrxz();" style="background-color: #ffffff00; border: 2px solid red;">Administrar</button>
         <br><br><br><br>
-        <div onclick="reproducirAudio();" id="logo" style="
+        <div onclick="reproducirAudio();mostrarModalrxz();" id="logo" style="
             width: 200px;
             height: 300px;
             background-image: url('https://i.ibb.co/C5mFsQnb/logozazahousestudiosoriginal.jpg');
@@ -2718,7 +2720,7 @@ setTimeout(() => {
         function validarClave() {
             const claveInput = document.getElementById("clave-input");
             const clave = claveInput.value;
-            if (clave === "1234") {
+            if (clave === "1109") {
                 document.getElementById("modal-acceso").classList.add("fantasma");
                 document.getElementById("modal-control").classList.remove("fantasma");
                 claveInput.value = "";

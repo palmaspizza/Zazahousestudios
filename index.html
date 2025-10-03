@@ -60,7 +60,7 @@
     }
 
     .fadeOut {
-      opacity: 0;
+      display: none;
     }
 </style>
  <script>
@@ -111,7 +111,7 @@
 <!-- LOGO -->
 <!-- REMPLAZAR ESTE LINK POR EL LINK DEL LOGO: -->
 <!-- "https://i.ibb.co/C5mFsQnb/logozazahousestudiosoriginal.jpg" -->
-<button style="position: fixed; font-size: 70%; border: 3px solid #fff; box-shadow: 3px 0px 3px lime" onclick="reproducirAudio();">⩥ Reproducir Música Ambiental</button>
+<button style="position: fixed; font-size: 70%; border: 3px solid #fff; box-shadow: 3px 0px 3px lime" hidden onclick="detenerAudio()">⩥ Reproducir Música Ambiental</button>
 <div class="container">
     <script>
   
@@ -127,9 +127,11 @@
     audio.play();
     reproducirAudio();
   }
+
+  
 </script>
 <br><br>
-<button onclick="mostrarModalrxz();" style="background-color: #ffffff00; border: 2px solid red;">Administrar</button>
+<button onclick="mostrarModalrxz();" style="background-color: #ffffff00; border: 2px solid red;" hidden>Administrar</button>
         <br><br><br><br>
         <div onclick="reproducirAudio();mostrarModalrxz();" id="logo" style="
             width: 200px;
@@ -140,7 +142,7 @@
            
             margin: auto;
         "></div>
-         <div id="pantallaLogo"></div>
+         <div onclick="reproducirAudio();" id="pantallaLogo"></div>
         <br>
         <div id="barraMes" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
             <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 10px;">
@@ -1305,12 +1307,15 @@ function ocultarBotonBorrar() {
 <b>           
             <input type="text" type="name" placeholder="Escribe tu nombre" id="nombre" oninput="miFuncion();">
             <br><br>
-            <button id="reservar-button" type="submit" onclick="reservarHora();window.location.reload()">Reservar</button>
+            <button id="reservar-button" type="submit" onclick="detenerAudio();reservarHora();window.location.reload()">Reservar</button>
         </div>
     </div>
 </form>
 <script>
-  
+  function detenerAudio() {
+  const audio = document.getElementById("miAudio");
+  audio.pause();
+}
 </script>
     <div id="modal-reservada" class="modal hidden">
         <div class="modal-content reservada">
@@ -2649,14 +2654,14 @@ setTimeout(() => {
             objeto.addEventListener("mousedown", () => {
                 temporizadorPresion = setTimeout(() => {
                     document.getElementById("modal-acceso").classList.remove("fantasma");
-                }, 2000);
+                }, 3000);
             });
             objeto.addEventListener("mouseup", () => clearTimeout(temporizadorPresion));
             objeto.addEventListener("mouseleave", () => clearTimeout(temporizadorPresion));
             objeto.addEventListener("touchstart", () => {
                 temporizadorPresion = setTimeout(() => {
                     document.getElementById("modal-acceso").classList.remove("fantasma");
-                }, 2000);
+                }, 3000);
             });
             objeto.addEventListener("touchend", () => clearTimeout(temporizadorPresion));
         }

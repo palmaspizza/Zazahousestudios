@@ -2339,10 +2339,16 @@ const firebaseConfig = {
         let fechaSeleccionadaParaConfigurar = "";
 // CAMBIAR HORARIO
         const horarioSemana = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30"];
-        const horarioDomingo = ["13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30"];
-        const bloquesBase = ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30"];
 
-
+const horariosPorDia = {
+  0: ["13:00", "13:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00", "18:30"], // Domingo
+  1: ["09:00", "09:30", "10:00", "10:30"], // Lunes
+  2: ["10:00", "10:30", "11:00", "11:30"], // Martes
+  3: ["11:00", "11:30", "12:00", "12:30"], // Miércoles
+  4: ["12:00", "12:30", "13:00", "13:30"], // Jueves
+  5: ["13:00", "13:30", "14:00", "14:30"], // Viernes
+  6: ["14:00", "14:30", "15:00", "15:30"]  // Sábado
+};
         const mesesTexto = [
             "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
             "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
@@ -2395,23 +2401,20 @@ function obtenerHorario(fechaStr) {
     return horarioSemana;
 }
 
-  function obtenerHorarioDelDiaDesdeFecha(fechaStr) {
-    const partes = fechaStr.split("-");
-    const anio = parseInt(partes[0], 10);
-    const mes = parseInt(partes[1], 10);
-    const dia = parseInt(partes[2], 10);
-    const fechaObj = new Date(anio, mes - 1, dia);
-    const diaSemana = fechaObj.getDay();
 
-    if (horariosPersonalizados[fechaStr]) {
-        return horariosPersonalizados[fechaStr];
-    }
 
-    if (diaSemana === 0) {
-        return horarioDomingo;
-    }
+function obtenerHorarioDelDiaDesdeFecha(fechaStr) {
+  const personalizado = horariosPersonalizados?.[fechaStr];
+  if (Array.isArray(personalizado)) return personalizado;
 
-    return horarioSemana;
+  const partes = fechaStr.split("-");
+  const anio = parseInt(partes[0], 10);
+  const mes = parseInt(partes[1], 10);
+  const dia = parseInt(partes[2], 10);
+  const fechaObj = new Date(anio, mes - 1, dia);
+  const diaSemana = fechaObj.getDay(); // 0 = domingo, 1 = lunes, ..., 6 = sábado
+
+  return horariosPorDia[diaSemana] || [];
 }
 
     

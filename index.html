@@ -133,7 +133,7 @@
 <br><br>
 <button onclick="mostrarModalrxz();" style="background-color: #ffffff00; border: 2px solid red;" hidden>Administrar</button>
         <br><br>
-        <div onclick="reproducirAudio();mostrarModalrxz();" id="logo" style="
+        <div onclick="reproducirAudio();" id="logo" style="
             width: 200px;
             height: 300px;
             background-image: url('https://i.ibb.co/C5mFsQnb/logozazahousestudiosoriginal.jpg');
@@ -975,26 +975,23 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
 <script>
 
-function mostrarModalrxz() {
-  console.log("🌿 Modal activado");
-  // Aquí va tu lógica para mostrar el modal
-  document.getElementById("modal-acceso").classList.remove("fantasma");
-}
 
 
 
+
+// Mouse
 logo.addEventListener("mousedown", () => {
   temporizadorPresion = setTimeout(mostrarModalrxz, 4000);
 });
-
 logo.addEventListener("mouseup", () => clearTimeout(temporizadorPresion));
 logo.addEventListener("mouseleave", () => clearTimeout(temporizadorPresion));
 
+// Pantalla táctil
 logo.addEventListener("touchstart", () => {
   temporizadorPresion = setTimeout(mostrarModalrxz, 4000);
 });
-
 logo.addEventListener("touchend", () => clearTimeout(temporizadorPresion));
+logo.addEventListener("touchcancel", () => clearTimeout(temporizadorPresion));
 
 </script>
         <div id="modal-mensaje" class="ventana-secreta fantasma">
@@ -1012,15 +1009,17 @@ logo.addEventListener("touchend", () => clearTimeout(temporizadorPresion));
 
         <div id="modal-cerrado" class="pantalla-negra fantasma">
             <h1>CERRADO</h1>
-            <p id="mensaje-cerrado" style="margin-top: 20px; font-size: 24px;"></p>
+            <p id="mensaje-cerrado" style="margin-top: 10px; font-size: 24px;"></p>
+            <br><br>
             <div id="logo-cerrado" style="
                 width: 200px;
                 height: 200px;
                 background-image: url('https://i.ibb.co/C5mFsQnb/logozazahousestudiosoriginal.jpg');
                 background-size: cover;
                 background-position: center;
-                border-radius: 50%;
+                border-radius: 20%;
                 margin: auto;
+                margin-top: -30px;
             "></div>
         </div>
 

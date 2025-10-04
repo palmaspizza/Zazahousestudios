@@ -22,6 +22,13 @@
   });
 }
 
+
+const miDiv = document.getElementById("pantallaLogo");
+miDiv.addEventListener("click", reproducirAudio);
+
+  // Ejecutar al deslizar el dedo sobre el div
+  miDiv.addEventListener("touchstart", reproducirAudio);
+  miDiv.addEventListener("touchmove", reproducirAudio);
 </script>
 
 <style>

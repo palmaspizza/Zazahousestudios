@@ -1272,10 +1272,39 @@
             </div>
         </div>
     </section>
+  <style>
+    .youtube-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background-color: #FF0000;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 18px;
+      font-weight: bold;
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 50px;
+      box-shadow: 0 0 10px #FF0000, 0 0 20px #FF0000, 0 0 40px #FF0000;
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
 
+    .youtube-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #FF0000, 0 0 40px #FF0000, 0 0 60px #FF0000;
+    }
+
+    .youtube-logo {
+      width: 24px;
+      height: 24px;
+      fill: white;
+      filter: drop-shadow(0 0 5px #fff);
+    }
+  </style>
 <!-- Sección del Reproductor de Video ZAZA -->
 <section class="zaza-video-section">
-    <h2 class="video-title">"ZAZABOY" EP COMPLETO <br> <span style="color: fuchsia;"> MALINNATO</span></h2>
+    <h2 class="video-title">"ZAZABOY"<br> <span style="color: fuchsia;"> MALINNATO</span></h2>
     
     <div class="video-container">
         <video id="zazaVideo" class="zaza-video" poster="https://i.ibb.co/C5mFsQnb/logozazahousestudiosoriginal.jpg">
@@ -1301,7 +1330,13 @@
                 <span class="time-display" id="duration">0:00</span>
             </div>
         </div>
-    </div>
+    </div> <BR></BR><a class="youtube-btn" href="https://www.youtube.com/watch?v=XYX9uSdjlFk" target="_blank">
+    <!-- Logo SVG de YouTube -->
+    <svg class="youtube-logo" viewBox="0 0 24 24">
+      <path d="M23.5 6.2s-.2-1.6-.8-2.3c-.8-.9-1.7-.9-2.1-1C17.6 2.5 12 2.5 12 2.5h-.1s-5.6 0-8.6.4c-.4.1-1.3.1-2.1 1-.6.7-.8 2.3-.8 2.3S0 8.1 0 10v4c0 1.9.2 3.8.2 3.8s.2 1.6.8 2.3c.8.9 1.9.9 2.4 1 1.7.2 7.2.4 8.6.4h.1s5.6 0 8.6-.4c.4-.1 1.3-.1 2.1-1 .6-.7.8-2.3.8-2.3s.2-1.9.2-3.8v-4c0-1.9-.2-3.8-.2-3.8zM9.6 15.6V8.4l6.4 3.6-6.4 3.6z"/>
+    </svg>
+    VER EN YOUTUBE
+  </a>
 </section><style>
 /* ==========================================
    REPRODUCTOR DE VIDEO ZAZABOYS

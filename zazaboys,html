@@ -1,0 +1,2329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZAZABOYS | Estudio Musical</title>
+    <link rel="icon" type="image/jpeg" href="https://i.ibb.co/C5mFsQnb/logozazahousestudiosoriginal.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <style>
+        :root {
+            --fuxia: #FF1493;
+            --fuxia-dark: #C71585;
+            --verde: #39FF14;
+            --verde-glow: #00FF41;
+            --amarillo: #FFFF00;
+            --amarillo-glow: #FFD700;
+            --negro: #0a0a0a;
+            --gris: #1a1a1a;
+            --danger: #ff1744;
+            --success: #00c853;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--negro);
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animación de humo en el fondo */
+        .smoke-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .smoke {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 80%, rgba(255, 20, 147, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(57, 255, 20, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(255, 255, 0, 0.08) 0%, transparent 50%);
+            animation: smokeMove 20s ease-in-out infinite;
+        }
+
+        .smoke:nth-child(2) {
+            animation-delay: -5s;
+            opacity: 0.6;
+        }
+
+        .smoke:nth-child(3) {
+            animation-delay: -10s;
+            opacity: 0.4;
+        }
+
+        @keyframes smokeMove {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+                filter: blur(60px);
+            }
+            33% {
+                transform: translate(30px, -30px) scale(1.1);
+                filter: blur(80px);
+            }
+            66% {
+                transform: translate(-20px, 20px) scale(0.9);
+                filter: blur(70px);
+            }
+        }
+
+        /* Header estilo ZAZABOYS */
+        .zaza-header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            position: relative;
+            background: linear-gradient(135deg, rgba(255,20,147,0.2) 0%, rgba(57,255,20,0.1) 50%, rgba(255,255,0,0.15) 100%);
+            border-bottom: 3px solid var(--fuxia);
+            box-shadow: 0 10px 40px rgba(255, 20, 147, 0.3);
+        }
+
+        .logo-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .logo-container::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: conic-gradient(from 0deg, var(--fuxia), var(--verde), var(--amarillo), var(--fuxia));
+            border-radius: 50%;
+            animation: rotate 4s linear infinite;
+            z-index: -1;
+            filter: blur(10px);
+            opacity: 0.8;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .logo-img {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--amarillo);
+            box-shadow: 0 0 30px var(--fuxia), 0 0 60px var(--verde);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .zaza-title {
+            font-size: 4rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            background: linear-gradient(45deg, var(--fuxia), var(--verde), var(--amarillo), var(--fuxia));
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease infinite;
+            text-shadow: 0 0 30px rgba(255, 20, 147, 0.5);
+            margin-top: 20px;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .zaza-subtitle {
+            color: var(--verde);
+            font-size: 1.3rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: 10px;
+            text-shadow: 0 0 10px var(--verde);
+        }
+
+        .zaza-slogan {
+            color: var(--amarillo);
+            font-size: 1.1rem;
+            font-style: italic;
+            margin-top: 15px;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+            to { text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.6); }
+        }
+
+        /* Botón principal de acceso */
+        .access-btn {
+            display: inline-block;
+            margin-top: 40px;
+            padding: 18px 50px;
+            background: linear-gradient(135deg, var(--fuxia) 0%, var(--fuxia-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            cursor: pointer;
+            box-shadow: 0 0 20px var(--fuxia), 0 0 40px rgba(255, 20, 147, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .access-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .access-btn:hover::before {
+            left: 100%;
+        }
+
+        .access-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 0 30px var(--fuxia), 0 0 60px rgba(255, 20, 147, 0.6);
+        }
+
+        /* Tarjeta de perfil ZAZA */
+        .perfil-section {
+            display: flex;
+            justify-content: center;
+            margin: -60px auto 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .perfil-card {
+            background: linear-gradient(135deg, rgba(255,20,147,0.2) 0%, rgba(57,255,20,0.1) 50%, rgba(255,255,0,0.15) 100%);
+            border: 2px solid var(--fuxia);
+            border-radius: 20px;
+            padding: 25px;
+            width: 350px;
+            color: #fff;
+            box-shadow: 0 10px 30px rgba(255, 20, 147, 0.3);
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 1s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .perfil-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, var(--fuxia), transparent, var(--verde), transparent);
+            animation: rotate 10s linear infinite;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .perfil-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .perfil-foto {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px solid var(--verde);
+            object-fit: cover;
+            box-shadow: 0 0 15px var(--verde);
+        }
+
+        .perfil-info {
+            flex-grow: 1;
+            margin-left: 15px;
+        }
+
+        .nombre {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--amarillo);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .badge {
+            background: linear-gradient(90deg, var(--fuxia), var(--verde));
+            color: #000;
+            font-size: 0.8em;
+            padding: 4px 10px;
+            border-radius: 8px;
+            margin-left: 8px;
+            font-weight: 700;
+            box-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
+        }
+
+        .estado {
+            font-style: italic;
+            color: var(--verde);
+            margin-top: 5px;
+            font-size: 0.95rem;
+            text-shadow: 0 0 5px var(--verde);
+        }
+
+        .online-dot {
+            width: 14px;
+            height: 14px;
+            background: var(--verde);
+            border-radius: 50%;
+            border: 2px solid #111;
+            box-shadow: 0 0 10px var(--verde);
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.7); }
+            70% { transform: scale(1.2); box-shadow: 0 0 10px 10px rgba(57, 255, 20, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(57, 255, 20, 0); }
+        }
+
+        .gif-container {
+            margin-top: 15px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--fuxia);
+        }
+
+        .gif-container img {
+            width: 100%;
+            display: block;
+        }
+
+        /* Reproductor estilo ZAZA */
+        .player-section {
+            text-align: center;
+            margin: 40px 20px;
+        }
+
+        .player-title {
+            color: var(--amarillo);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px var(--amarillo);
+        }
+
+        .zaza-player {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(255,20,147,0.2), rgba(57,255,20,0.1));
+            padding: 25px;
+            border-radius: 20px;
+            border: 2px solid var(--fuxia);
+            box-shadow: 0 0 30px rgba(255, 20, 147, 0.3);
+        }
+
+        .player-container {
+            position: relative;
+            display: inline-block;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            width: 400px;
+            height: 225px;
+            background: #000;
+        }
+
+        .player-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            z-index: 2;
+            border-bottom: 2px solid var(--fuxia);
+        }
+
+        .player-artist-img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 2px solid var(--verde);
+            position: absolute;
+            left: 15px;
+            box-shadow: 0 0 10px var(--verde);
+        }
+
+        .player-song-title {
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: underline;
+            text-decoration-color: var(--fuxia);
+            margin-left: 40px;
+        }
+
+        .player-thumb {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+        }
+
+        .play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--fuxia);
+            color: #fff;
+            font-size: 28px;
+            width: 80px;
+            height: 80px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 30px var(--fuxia), 0 0 60px rgba(255, 20, 147, 0.5);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3;
+        }
+
+        .play-btn:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            background: var(--verde);
+            box-shadow: 0 0 40px var(--verde);
+        }
+
+        .play-btn.playing {
+            background: #444;
+            box-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+
+        /* Modales */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1b2e 100%);
+            border: 3px solid var(--fuxia);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 0 50px var(--fuxia), 0 0 100px rgba(57, 255, 20, 0.3);
+            position: relative;
+            animation: slideUp 0.4s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-title {
+            font-size: 2rem;
+            color: var(--amarillo);
+            text-align: center;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px var(--amarillo);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+            color: var(--fuxia);
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .close-modal:hover {
+            color: var(--verde);
+            transform: rotate(90deg);
+        }
+
+        /* Inputs estilo ZAZA */
+        .zaza-input {
+            width: 100%;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--fuxia);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .zaza-input:focus {
+            border-color: var(--verde);
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.4);
+            transform: scale(1.02);
+        }
+
+        .zaza-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .zaza-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--verde) 0%, var(--verde-glow) 100%);
+            color: black;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.4);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .zaza-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px var(--verde);
+        }
+
+        .zaza-btn:disabled {
+            background: #444;
+            color: #888;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Botón de editar/eliminar */
+        .zaza-btn-secondary {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--fuxia) 0%, var(--fuxia-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(255, 20, 147, 0.4);
+            font-family: 'Poppins', sans-serif;
+            margin-top: 15px;
+        }
+
+        .zaza-btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px var(--fuxia);
+        }
+
+        .zaza-btn-danger {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--danger) 0%, #cc0000 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(255, 23, 68, 0.4);
+            font-family: 'Poppins', sans-serif;
+            margin-top: 15px;
+        }
+
+        .zaza-btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px var(--danger);
+        }
+
+        .error-msg {
+            color: #ff4444;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+            font-weight: 600;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Grid de ÁLBUM/CANCIÓNes */
+        #albumes-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            padding: 60px 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .album-zaza {
+            background: linear-gradient(135deg, rgba(255,20,147,0.1) 0%, rgba(57,255,20,0.05) 100%);
+            border: 2px solid var(--fuxia);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .album-zaza::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--fuxia), var(--verde), var(--amarillo), var(--fuxia));
+            border-radius: 20px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .album-zaza:hover::before {
+            opacity: 1;
+        }
+
+        .album-zaza:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(255, 20, 147, 0.3);
+        }
+
+        /* Modo eliminar overlay */
+        .modo-eliminar-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 23, 68, 0.3);
+            z-index: 5;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .modo-eliminar-activo .modo-eliminar-overlay {
+            display: flex;
+        }
+
+        .modo-eliminar-badge {
+            background: var(--danger);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            animation: pulse 1s infinite;
+        }
+
+        .album-img-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+        }
+
+        .album-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.5s;
+            filter: contrast(1.1) saturate(1.2);
+        }
+
+        .album-zaza:hover .album-img {
+            transform: scale(1.1);
+            filter: contrast(1.2) saturate(1.4) brightness(1.1);
+        }
+
+        .album-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .album-zaza:hover .album-overlay {
+            opacity: 1;
+        }
+
+        .album-info {
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .album-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--amarillo);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px var(--amarillo);
+        }
+
+        .album-desc {
+            color: #ccc;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* Botones de plataformas */
+        .botones-zaza {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .btn-platform {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 15px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .btn-spotify {
+            background: #1DB954;
+            color: white;
+        }
+
+        .btn-spotify:hover {
+            box-shadow: 0 0 20px #1DB954;
+            transform: translateY(-2px);
+        }
+
+        .btn-apple {
+            background: #FA243C;
+            color: white;
+        }
+
+        .btn-apple:hover {
+            box-shadow: 0 0 20px #FA243C;
+            transform: translateY(-2px);
+        }
+
+        .btn-soundcloud {
+            background: #FF5500;
+            color: white;
+        }
+
+        .btn-soundcloud:hover {
+            box-shadow: 0 0 20px #FF5500;
+            transform: translateY(-2px);
+        }
+
+        .btn-youtube {
+            background: #FF0000;
+            color: white;
+        }
+
+        .btn-youtube:hover {
+            box-shadow: 0 0 20px #FF0000;
+            transform: translateY(-2px);
+        }
+
+        .btn-audiomack {
+            background: #FFA200;
+            color: black;
+        }
+
+        .btn-audiomack:hover {
+            box-shadow: 0 0 20px #FFA200;
+            transform: translateY(-2px);
+        }
+
+        .btn-platform img {
+            width: 18px;
+            height: 18px;
+            filter: brightness(0) invert(1);
+        }
+
+        .btn-audiomack img {
+            filter: none;
+        }
+
+        /* Admin buttons en cards */
+        .admin-btns {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .admin-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .admin-btn.edit {
+            background: var(--success);
+            color: white;
+        }
+
+        .admin-btn.edit:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px var(--success);
+        }
+
+        .admin-btn.delete {
+            background: var(--danger);
+            color: white;
+        }
+
+        .admin-btn.delete:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px var(--danger);
+        }
+
+        /* Formulario de creación */
+        .form-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-label {
+            display: block;
+            padding: 20px;
+            background: rgba(255, 20, 147, 0.2);
+            border: 2px dashed var(--fuxia);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--fuxia);
+            font-weight: 600;
+        }
+
+        .file-label:hover {
+            background: rgba(255, 20, 147, 0.3);
+            border-color: var(--verde);
+            color: var(--verde);
+        }
+
+        .preview-img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 10px;
+            margin-top: 10px;
+            display: none;
+            border: 2px solid var(--verde);
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: var(--verde);
+            margin-top: 20px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--verde);
+            border-top-color: transparent;
+            border-radius: 50%;
+            margin-left: 10px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .success-msg {
+            display: none;
+            text-align: center;
+            color: var(--verde);
+            margin-top: 20px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px var(--verde);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: var(--amarillo);
+            margin: 40px 0 20px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 0 0 20px var(--amarillo);
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--fuxia), var(--verde));
+            margin: 15px auto;
+            border-radius: 2px;
+        }
+
+        .error-container {
+            text-align: center;
+            color: #ff4444;
+            padding: 40px;
+            grid-column: 1/-1;
+            background: rgba(255, 68, 68, 0.1);
+            border: 2px solid #ff4444;
+            border-radius: 15px;
+            margin: 20px;
+        }
+
+        .error-container button {
+            margin-top: 15px;
+            padding: 10px 25px;
+            background: var(--fuxia);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Banner modo eliminar */
+        .modo-eliminar-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--danger);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            z-index: 9999;
+            font-weight: 700;
+            animation: pulse 1s infinite;
+            display: none;
+        }
+
+        .modo-eliminar-banner.active {
+            display: block;
+        }
+
+        .modo-eliminar-banner button {
+            margin-left: 15px;
+            padding: 8px 20px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .modo-eliminar-banner button:hover {
+            background: white;
+            color: var(--danger);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            #albumes-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            #albumes-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .zaza-title { font-size: 2.5rem; letter-spacing: 4px; }
+            .logo-img { width: 140px; height: 140px; }
+            .perfil-card { width: 90%; max-width: 350px; }
+            .player-container { width: 90%; max-width: 400px; height: 200px; }
+            .modal-content { padding: 30px 20px; width: 95%; }
+            
+            #albumes-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+                padding: 40px 15px;
+            }
+
+            .album-title {
+                font-size: 1.1rem;
+            }
+
+            .album-desc {
+                font-size: 0.85rem;
+            }
+
+            .btn-platform {
+                padding: 8px 12px;
+                font-size: 0.75rem;
+                gap: 4px;
+            }
+
+            .btn-platform img {
+                width: 16px;
+                height: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #albumes-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--negro);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--fuxia), var(--verde));
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(var(--verde), var(--amarillo));
+        }
+
+        /* Efecto de partículas */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--fuxia);
+            border-radius: 50%;
+            animation: float 10s infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .social-icons a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,20,147,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--fuxia);
+            transition: all 0.3s;
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+
+        .social-icons a:hover {
+            background: var(--fuxia);
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 0 20px var(--fuxia);
+        }
+
+        .debug-info {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: var(--verde);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-family: monospace;
+            border: 1px solid var(--verde);
+            max-width: 300px;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Banner modo eliminar -->
+     <div id="modoEliminarBanner" class="modo-eliminar-activo" style="display: none;">
+    🗑️ MODO ELIMINAR ACTIVO - Toca un producto para eliminarlo
+    <button onclick="desactivarModoEliminar()" style="margin-left: 10px; padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer;">CERRAR</button>
+  </div>
+
+    <!-- Debug info -->
+    <div class="debug-info" id="debugInfo">
+        ZAZABOYS
+    </div>
+
+    <!-- Efectos de humo -->
+    <div class="smoke-container">
+        <div class="smoke"></div>
+        <div class="smoke"></div>
+        <div class="smoke"></div>
+    </div>
+
+    <!-- Partículas -->
+    <div class="particles" id="particles"></div>
+<script>
+  const logoContainer = document.querySelector('.logo-container');
+  let pressTimer;
+
+  logoContainer.addEventListener('mousedown', function() {
+    // Inicia el temporizador al presionar
+    pressTimer = setTimeout(function() {
+      openLoginModal(); // Ejecuta la función después de 2 segundos
+    }, 2000);
+  });
+
+  logoContainer.addEventListener('mouseup', function() {
+    // Cancela el temporizador si se suelta antes de los 2 segundos
+    clearTimeout(pressTimer);
+  });
+
+  logoContainer.addEventListener('mouseleave', function() {
+    // Cancela también si el cursor sale del contenedor
+    clearTimeout(pressTimer);
+  });
+
+  // Ejemplo de la función (puedes reemplazarla con tu lógica real)
+  function openLoginModal() {
+    alert("Login Modal abierto!");
+  }
+</script>
+    <!-- Header ZAZABOYS -->
+    <header class="zaza-header">
+        <div onclick="openLoginModal()" class="logo-container">
+            <img src="https://i.ibb.co/C5mFsQnb/logozazahousestudiosoriginal.jpg" alt="ZAZABOYS Logo" class="logo-img">
+        </div>
+        <h1 class="zaza-title">ZAZABOYS</h1>
+        <p class="zaza-subtitle">Zaza House Studios</p>
+        <p class="zaza-slogan">"El sonido de la CASA, la esencia de la ZAZA"</p>
+        
+    <br>
+    </header>
+
+    <!-- Tarjeta de Perfil -->
+    <section class="perfil-section">
+        <div class="perfil-card">
+            <div class="perfil-header">
+                <img src="https://i.ibb.co/C5mFsQnb/logozazahousestudiosoriginal.jpg" alt="ZAZABOYS" class="perfil-foto">
+                <div class="perfil-info">
+                    <div class="nombre">
+                        @zazaboys <span class="badge">PRO</span>
+                    </div>
+                    <div class="estado">🎵 En el estudio...</div>
+                </div>
+                <span class="online-dot"></span>
+            </div>
+            <div class="social-icons">
+                <a href="#" title="Instagram">📸</a>
+                <a href="#" title="YouTube">📺</a>
+                <a href="#" title="Spotify">🎵</a>
+                <a href="#" title="SoundCloud">☁️</a>
+            </div>
+        </div>
+    </section>
+
+<!-- Sección del Reproductor de Video ZAZA -->
+<section class="zaza-video-section">
+    <h2 class="video-title">"ZAZABOY" EP COMPLETO <br> <span style="color: fuchsia;"> MALINNATO</span></h2>
+    
+    <div class="video-container">
+        <video id="zazaVideo" class="zaza-video" poster="https://i.ibb.co/C5mFsQnb/logozazahousestudiosoriginal.jpg">
+            <source src="zazzaboysvideo.mp4" type="video/mp4">
+            Tu navegador no soporta el video.
+        </video>
+        
+        <!-- Overlay con botón play -->
+        <div id="videoOverlay" class="video-overlay">
+            <button id="playPauseBtn" class="zaza-play-btn" onclick="toggleVideo()">
+                <span class="play-icon">▶</span>
+            </button>
+        </div>
+        
+        <!-- Barra de controles -->
+        <div class="video-controls">
+            <div class="progress-container" onclick="seekVideo(event)">
+                <div class="progress-bar" id="progressBar"></div>
+                <div class="progress-handle" id="progressHandle"></div>
+            </div>
+            <div class="controls-row">
+                <span class="time-display" id="currentTime">0:00</span>
+                <span class="time-display" id="duration">0:00</span>
+            </div>
+        </div>
+    </div>
+</section><style>
+/* ==========================================
+   REPRODUCTOR DE VIDEO ZAZABOYS
+   ========================================== */
+
+.zaza-video-section {
+    text-align: center;
+    margin: 40px 20px;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, rgba(255,20,147,0.1) 0%, rgba(57,255,20,0.05) 50%, rgba(255,255,0,0.1) 100%);
+    border-radius: 30px;
+    border: 2px solid var(--fuxia);
+    box-shadow: 0 0 40px rgba(255, 20, 147, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.zaza-video-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 400px;
+    height: 400px;
+    background: conic-gradient(from 0deg, transparent, var(--fuxia), transparent, var(--verde), transparent);
+    animation: rotate 15s linear infinite;
+    opacity: 0.05;
+    z-index: 0;
+}
+
+.video-title {
+    color: var(--amarillo);
+    font-size: 2rem;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    text-shadow: 0 0 20px var(--amarillo);
+    position: relative;
+    z-index: 1;
+}
+
+.video-container {
+    position: relative;
+    max-width: 200px;
+    margin: 0 auto;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(255, 20, 147, 0.3);
+    border: 3px solid var(--fuxia);
+    z-index: 1;
+}
+
+.zaza-video {
+    width: 100%;
+    height: auto;
+    display: block;
+    background: #000;
+}
+
+/* Overlay con efecto de pulso */
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(2px);
+}
+
+.video-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Botón Play/Pause ZAZA */
+.zaza-play-btn {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--verde) 0%, var(--verde-glow) 100%);
+    border: 4px solid var(--amarillo);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 
+        0 0 30px var(--verde),
+        0 0 60px rgba(57, 255, 20, 0.5),
+        inset 0 0 20px rgba(255, 255, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: pulse-glow 2s ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+}
+
+.zaza-play-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+    transform: rotate(45deg);
+    transition: all 0.5s;
+    opacity: 0;
+}
+
+.zaza-play-btn:hover {
+    transform: scale(1.15);
+    box-shadow: 
+        0 0 50px var(--verde),
+        0 0 100px rgba(57, 255, 20, 0.7),
+        inset 0 0 30px rgba(255, 255, 255, 0.3);
+    border-color: #fff;
+}
+
+.zaza-play-btn:hover::before {
+    animation: shine 0.8s ease-in-out;
+}
+
+.zaza-play-btn:active {
+    transform: scale(0.95);
+}
+
+/* Icono de play/pause */
+.play-icon {
+    font-size: 2.5rem;
+    color: #000;
+    margin-left: 5px;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.zaza-play-btn.playing {
+    background: linear-gradient(135deg, var(--fuxia) 0%, var(--fuxia-dark) 100%);
+    border-color: var(--amarillo);
+    box-shadow: 
+        0 0 30px var(--fuxia),
+        0 0 60px rgba(255, 20, 147, 0.5);
+    animation: none;
+    width: 70px;
+    height: 70px;
+    opacity: 0;
+}
+
+.video-container:hover .zaza-play-btn.playing {
+    opacity: 1;
+}
+
+.zaza-play-btn.playing .play-icon {
+    margin-left: 0;
+}
+
+/* Animaciones */
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 
+            0 0 30px var(--verde),
+            0 0 60px rgba(57, 255, 20, 0.5);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 
+            0 0 50px var(--verde),
+            0 0 80px rgba(57, 255, 20, 0.7);
+        transform: scale(1.05);
+    }
+}
+
+@keyframes shine {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); opacity: 0; }
+}
+
+/* Barra de controles */
+.video-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+    padding: 30px 20px 20px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+}
+
+.video-container:hover .video-controls {
+    transform: translateY(0);
+}
+
+.progress-container {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    margin-bottom: 10px;
+    overflow: visible;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--fuxia), var(--verde));
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 10px var(--verde);
+}
+
+.progress-handle {
+    position: absolute;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    background: var(--amarillo);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    left: 0%;
+    box-shadow: 0 0 15px var(--amarillo);
+    transition: transform 0.2s ease;
+}
+
+.progress-container:hover .progress-handle {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.controls-row {
+    display: flex;
+    justify-content: space-between;
+    color: var(--verde);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-shadow: 0 0 10px var(--verde);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .video-container {
+        border-radius: 15px;
+        border-width: 2px;
+    }
+    
+    .zaza-play-btn {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .play-icon {
+        font-size: 2rem;
+    }
+    
+    .video-title {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .zaza-play-btn {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .play-icon {
+        font-size: 1.5rem;
+    }
+}
+</style>
+<script>
+// ==========================================
+// REPRODUCTOR DE VIDEO ZAZABOYS (VARIABLES RENOMBRADAS)
+// ==========================================
+
+const zazaVideo = document.getElementById('zazaVideo');
+const videoPlayBtn = document.getElementById('playPauseBtn');
+const videoOverlay = document.getElementById('videoOverlay');
+const videoProgressBar = document.getElementById('progressBar');
+const videoProgressHandle = document.getElementById('progressHandle');
+const videoCurrentTime = document.getElementById('currentTime');
+const videoDuration = document.getElementById('duration');
+
+let isVideoPlaying = false;
+
+function toggleVideo() {
+    if (zazaVideo.paused) {
+        zazaVideo.muted = false; // Asegurar que no esté mute
+        zazaVideo.volume = 1.0;  // Volumen al máximo
+        zazaVideo.play();
+        isVideoPlaying = true;
+        videoPlayBtn.classList.add('playing');
+        videoPlayBtn.innerHTML = '<span class="play-icon">⏸</span>';
+        videoOverlay.classList.add('hidden');
+    } else {
+        zazaVideo.pause();
+        isVideoPlaying = false;
+        videoPlayBtn.classList.remove('playing');
+        videoPlayBtn.innerHTML = '<span class="play-icon">▶</span>';
+        videoOverlay.classList.remove('hidden');
+    }
+}
+
+// Click en el video para pausar/reproducir
+zazaVideo.addEventListener('click', toggleVideo);
+
+// Actualizar barra de progreso
+zazaVideo.addEventListener('timeupdate', () => {
+    const progress = (zazaVideo.currentTime / zazaVideo.duration) * 100;
+    videoProgressBar.style.width = progress + '%';
+    videoProgressHandle.style.left = progress + '%';
+    videoCurrentTime.textContent = formatVideoTime(zazaVideo.currentTime);
+});
+
+// Cuando el video termina
+zazaVideo.addEventListener('ended', () => {
+    isVideoPlaying = false;
+    videoPlayBtn.classList.remove('playing');
+    videoPlayBtn.innerHTML = '<span class="play-icon">▶</span>';
+    videoOverlay.classList.remove('hidden');
+    videoProgressBar.style.width = '0%';
+    videoProgressHandle.style.left = '0%';
+});
+
+// Cargar duración total
+zazaVideo.addEventListener('loadedmetadata', () => {
+    videoDuration.textContent = formatVideoTime(zazaVideo.duration);
+});
+
+// Seek (adelantar/retroceder)
+function seekVideo(e) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const pos = (e.clientX - rect.left) / rect.width;
+    zazaVideo.currentTime = pos * zazaVideo.duration;
+}
+
+// Formatear tiempo (0:00)
+function formatVideoTime(seconds) {
+    if (isNaN(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return mins + ':' + (secs < 10 ? '0' : '') + secs;
+}
+
+// Mostrar controles al mover el mouse sobre el video
+let videoControlsTimeout;
+const videoContainer = document.querySelector('.video-container');
+
+videoContainer.addEventListener('mousemove', () => {
+    if (isVideoPlaying) {
+        videoPlayBtn.style.opacity = '1';
+        clearTimeout(videoControlsTimeout);
+        videoControlsTimeout = setTimeout(() => {
+            if (isVideoPlaying) {
+                videoPlayBtn.style.opacity = '0';
+            }
+        }, 2000);
+    }
+});
+
+videoContainer.addEventListener('mouseleave', () => {
+    if (isVideoPlaying) {
+        videoPlayBtn.style.opacity = '0';
+    }
+});
+</script>
+    <!-- Título de sección -->
+    <h2 class="section-title">📀 Nuestros Lanzamientos</h2>
+
+    <!-- Contenedor de ÁLBUM/CANCIÓNes -->
+    <section id="albumes-container">
+        <div style="text-align: center; color: #666; padding: 40px; grid-column: 1/-1;">
+            <p>Cargando ÁLBUM/CANCIÓN...</p>
+        </div>
+    </section>
+
+    <!-- Modal de Login -->
+    <div id="loginModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('loginModal')">&times;</span>
+            <h2 class="modal-title">🔒 Acceso Protegido</h2>
+            <input type="password" id="passwordInput" class="zaza-input" placeholder="Ingresa la contraseña...">
+            <button class="zaza-btn" onclick="checkPassword()">INGRESAR</button>
+                 <br>  <br><button style="background: rgb(105, 105, 105) !important; color: #fff;" class="zaza-btn" onclick="closeModal('loginModal')">VOLVER</button>  <p id="errorMsg" class="error-msg">❌ Contraseña incorrecta</p>
+        </div>
+    </div>
+
+    <!-- Modal de Creación/Edición -->
+    <div id="createModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('createModal')">&times;</span>
+            <h2 class="modal-title" id="modalTitle">🎵 Crear Nuevo ÁLBUM/CANCIÓN</h2>
+            
+            <div class="form-grid">
+                <input type="hidden" id="albumId">
+
+                <div class="file-input-wrapper">
+                    <input type="file" id="albumImage" accept="image/*" onchange="previewImage(this)">
+                    <label for="albumImage" class="file-label" id="fileLabel">
+                        📷 Seleccionar imagen del ÁLBUM/CANCIÓN
+                    </label>
+                    <img id="previewImg" class="preview-img">
+                    <button type="button" id="btnQuitarFoto" class="zaza-btn-danger" style="display: none; margin-top: 10px; font-size: 0.9rem;" onclick="quitarFoto()">
+                        ❌ Quitar foto
+                    </button>
+                </div>
+
+                <input type="text" id="albumTitle" class="zaza-input" placeholder="Nombre del ÁLBUM/CANCIÓN o canción *">
+                <textarea id="albumDesc" class="zaza-input" placeholder="Descripción del ÁLBUM/CANCIÓN..." rows="3"></textarea>
+                
+                <div style="border-top: 2px solid var(--fuxia); margin: 10px 0; padding-top: 15px;">
+                    <h3 style="color: var(--verde); margin-bottom: 15px; text-align: center; font-size: 1.1rem;">🔗 Links de Plataformas</h3>
+                    
+                    <input type="text" id="linkSpotify" class="zaza-input" placeholder="Link de Spotify">
+                    <input type="text" id="linkApple" class="zaza-input" placeholder="Link de Apple Music">
+                    <input type="text" id="linkSoundCloud" class="zaza-input" placeholder="Link de SoundCloud">
+                    <input type="text" id="linkYouTube" class="zaza-input" placeholder="Link de YouTube Music">
+                    <input type="text" id="linkAudiomack" class="zaza-input" placeholder="Link de Audiomack">
+                </div>
+
+                <button class="zaza-btn" id="saveAlbumBtn" onclick="guardarAlbum()" style="margin-top: 20px;">
+                    💾 GUARDAR ÁLBUM/CANCIÓN
+                </button>
+
+                <button class="zaza-btn-secondary" onclick="activarModoEliminar();desactivarModoEliminar()">
+                    🗑️ EDITAR O ELIMINAR ALBUM/CANCIÓN
+                </button>
+                
+                <div id="loadingMsg" class="loading">Guardando ÁLBUM/CANCIÓN...</div>
+                <div id="successMsg" class="success-msg">✅ ÁLBUM/CANCIÓN guardado exitosamente</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación -->
+    <div id="confirmModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 400px;">
+            <span class="close-modal" onclick="closeModal('confirmModal')">&times;</span>
+            <div style="text-align: center; padding: 20px;">
+                <div style="font-size: 4rem; margin-bottom: 20px;">⚠️</div>
+                <h3 style="color: var(--amarillo); margin-bottom: 15px;">¿Confirmar?</h3>
+                <p id="confirmMessage" style="color: #ccc; margin-bottom: 25px;">¿Estás seguro?</p>
+                <button class="zaza-btn" id="btnConfirmarSi" style="margin-bottom: 10px;">
+                    ✅ SÍ, CONFIRMAR
+                </button>
+                <button class="zaza-btn-secondary" onclick="closeModal('confirmModal')" style="background: #444;">
+                    CANCELAR
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIGURACIÓN FIREBASE
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDgsdb0dO0oedOMw3HZLzOpzar5Z76Zq74",
+            authDomain: "zazahousestudios-8b7ca.firebaseapp.com",
+            databaseURL: "https://zazahousestudios-default-rtdb.firebaseio.com",
+            projectId: "zazahousestudios-8b7ca",
+            storageBucket: "zazahousestudios-8b7ca.appspot.com",
+            messagingSenderId: "560815486667",
+            appId: "1:560815486667:web:f521727dd900f255f28d4e"
+        };
+
+        // Inicializar Firebase
+        let app, db;
+        let albumes = [];
+        let isAdmin = false;
+        let modoEliminar = false;
+        let fotoTemporal = null;
+        let guardando = false;
+        let idAEliminar = null;
+
+        try {
+            app = firebase.initializeApp(firebaseConfig);
+            db = firebase.database();
+            
+            console.log('✅ Firebase inicializado');
+            document.getElementById('firebaseStatus').textContent = 'Conectado';
+            document.getElementById('firebaseStatus').style.color = 'var(--verde)';
+            
+            // Escuchar cambios en tiempo real
+            db.ref('albums').on('value', (snapshot) => {
+                const nuevosAlbumes = [];
+                if (snapshot.exists()) {
+                    snapshot.forEach((child) => {
+                        nuevosAlbumes.push({ id: child.key, ...child.val() });
+                    });
+                    // Ordenar por fecha de creación (más reciente primero)
+                    nuevosAlbumes.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                }
+                albumes = nuevosAlbumes;
+                localStorage.setItem('zazaboys_albums_backup', JSON.stringify(albumes));
+                document.getElementById('albumCount').textContent = albumes.length;
+                renderAlbumes();
+            }, (error) => {
+                console.warn('⚠️ Error Firebase, usando localStorage:', error);
+                usarDatosLocales();
+            });
+
+        } catch (error) {
+            console.error('❌ Error inicializando Firebase:', error);
+            document.getElementById('firebaseStatus').textContent = 'Error';
+            document.getElementById('firebaseStatus').style.color = '#ff4444';
+            usarDatosLocales();
+        }
+
+        // Cargar desde localStorage como backup
+        function usarDatosLocales() {
+            try {
+                const backup = localStorage.getItem('zazaboys_albums_backup');
+                if (backup) {
+                    albumes = JSON.parse(backup);
+                    renderAlbumes();
+                }
+            } catch (e) {
+                console.error('Error localStorage:', e);
+            }
+        }
+
+        // ==========================================
+        // EFECTOS VISUALES
+        // ==========================================
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particle.style.background = ['var(--fuxia)', 'var(--verde)', 'var(--amarillo)'][Math.floor(Math.random() * 3)];
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // ==========================================
+        // REPRODUCTOR
+        // ==========================================
+        let isPlaying = false;
+        function togglePlay() {
+            const btn = document.getElementById('playBtn');
+            const audio = document.getElementById('audioPlayer');
+            
+            if (!audio.src) {
+                alert('Selecciona una canción para reproducir');
+                return;
+            }
+            
+            if (isPlaying) {
+                audio.pause();
+                btn.innerHTML = '▶';
+                btn.classList.remove('playing');
+                btn.style.background = 'var(--fuxia)';
+            } else {
+                audio.play();
+                btn.innerHTML = '⏸';
+                btn.classList.add('playing');
+                btn.style.background = '#444';
+            }
+            isPlaying = !isPlaying;
+        }
+
+        // ==========================================
+        // MODALES
+        // ==========================================
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('errorMsg').style.display = 'none';
+            document.getElementById('passwordInput').focus();
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            if (password === '1109') {
+                isAdmin = true;
+                closeModal('loginModal');
+                openCreateModal();
+            } else {
+                const errorMsg = document.getElementById('errorMsg');
+                errorMsg.style.display = 'block';
+                const input = document.getElementById('passwordInput');
+                input.style.borderColor = '#ff4444';
+                setTimeout(() => {
+                    input.style.borderColor = '';
+                }, 1000);
+            }
+        }
+
+        function openCreateModal() {
+            limpiarFormulario();
+            document.getElementById('modalTitle').textContent = '🎵 Crear Nuevo ÁLBUM/CANCIÓN';
+            document.getElementById('createModal').classList.add('active');
+        }
+
+        // ==========================================
+        // MODO ELIMINAR
+        // ==========================================
+        function activarModoEliminar() {
+            closeModal('createModal');
+            modoEliminar = true;
+            document.getElementById('modoEliminarBanner').classList.add('active');
+            renderAlbumes();
+        }
+
+        function desactivarModoEliminar() {
+            modoEliminar = false;
+            document.getElementById('modoEliminarBanner').classList.remove('active');
+            renderAlbumes();
+        }
+
+        // ==========================================
+        // FORMULARIO Y PREVIEW
+        // ==========================================
+        function previewImage(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                fotoTemporal = e.target.result;
+                document.getElementById('previewImg').src = fotoTemporal;
+                document.getElementById('previewImg').style.display = 'block';
+                document.getElementById('fileLabel').innerHTML = '📷 Cambiar imagen (' + file.name + ')';
+                document.getElementById('btnQuitarFoto').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function quitarFoto() {
+            fotoTemporal = null;
+            document.getElementById('albumImage').value = '';
+            document.getElementById('previewImg').style.display = 'none';
+            document.getElementById('fileLabel').innerHTML = '📷 Seleccionar imagen del ÁLBUM/CANCIÓN';
+            document.getElementById('btnQuitarFoto').style.display = 'none';
+        }
+
+        function limpiarFormulario() {
+            document.getElementById('albumId').value = '';
+            document.getElementById('albumTitle').value = '';
+            document.getElementById('albumDesc').value = '';
+            document.getElementById('linkSpotify').value = '';
+            document.getElementById('linkApple').value = '';
+            document.getElementById('linkSoundCloud').value = '';
+            document.getElementById('linkYouTube').value = '';
+            document.getElementById('linkAudiomack').value = '';
+            quitarFoto();
+            document.getElementById('loadingMsg').style.display = 'none';
+            document.getElementById('successMsg').style.display = 'none';
+            document.getElementById('saveAlbumBtn').disabled = false;
+            document.getElementById('saveAlbumBtn').innerHTML = '💾 GUARDAR ÁLBUM/CANCIÓN';
+        }
+
+        // ==========================================
+        // GUARDAR ÁLBUM/CANCIÓN (CREAR O EDITAR)
+        // ==========================================
+        async function guardarAlbum() {
+            if (guardando) {
+                console.log('⏳ Ya se está guardando...');
+                return;
+            }
+
+            const id = document.getElementById('albumId').value;
+            const esEdicion = !!id;
+            const titulo = document.getElementById('albumTitle').value.trim();
+
+            if (!titulo) {
+                alert('⚠️ El nombre del ÁLBUM/CANCIÓN es obligatorio');
+                document.getElementById('albumTitle').focus();
+                return;
+            }
+
+            guardando = true;
+            const btn = document.getElementById('saveAlbumBtn');
+            const textoOriginal = btn.innerHTML;
+            btn.innerHTML = '⏳ Guardando...';
+            btn.disabled = true;
+            document.getElementById('loadingMsg').style.display = 'block';
+            document.getElementById('successMsg').style.display = 'none';
+
+            try {
+                // Preparar datos
+                const data = {
+                    title: titulo,
+                    description: document.getElementById('albumDesc').value.trim() || 'Sin descripción',
+                    links: {
+                        spotify: document.getElementById('linkSpotify').value.trim() || '',
+                        apple: document.getElementById('linkApple').value.trim() || '',
+                        soundcloud: document.getElementById('linkSoundCloud').value.trim() || '',
+                        youtube: document.getElementById('linkYouTube').value.trim() || '',
+                        audiomack: document.getElementById('linkAudiomack').value.trim() || ''
+                    },
+                    updatedAt: Date.now()
+                };
+
+                // Manejar imagen
+                if (fotoTemporal) {
+                    // Comprimir imagen antes de guardar
+                    data.image = await comprimirImagen(fotoTemporal);
+                } else if (esEdicion) {
+                    // Mantener imagen existente
+                    const existente = albumes.find(a => a.id === id);
+                    if (existente?.image) {
+                        data.image = existente.image;
+                    } else {
+                        data.image = 'https://i.ibb.co/C5mFsQnb/logozazahousestudiosoriginal.jpg';
+                    }
+                } else {
+                    // Imagen por defecto
+                    data.image = 'https://i.ibb.co/C5mFsQnb/logozazahousestudiosoriginal.jpg';
+                }
+
+                if (esEdicion) {
+                    // ========== EDITAR ==========
+                    console.log('✏️ Editando ÁLBUM/CANCIÓN:', id);
+                    
+                    // Actualizar en Firebase
+                    if (db && !id.startsWith('local-')) {
+                        try {
+                            await db.ref('albums/' + id).update(data);
+                            console.log('✅ Actualizado en Firebase');
+                        } catch (firebaseError) {
+                            console.warn('⚠️ Error Firebase:', firebaseError);
+                        }
+                    }
+                    
+                    // Actualizar en array local
+                    const idx = albumes.findIndex(a => a.id === id);
+                    if (idx >= 0) {
+                        albumes[idx] = { ...albumes[idx], ...data };
+                    }
+                    
+                } else {
+                    // ========== CREAR NUEVO ==========
+                    console.log('🎵 Creando nuevo ÁLBUM/CANCIÓN');
+                    
+                    data.createdAt = Date.now();
+                    
+                    let newId;
+                    
+                    // Intentar crear en Firebase
+                    if (db) {
+                        try {
+                            const nuevoRef = db.ref('albums').push();
+                            await nuevoRef.set(data);
+                            newId = nuevoRef.key;
+                            console.log('✅ Creado en Firebase:', newId);
+                        } catch (firebaseError) {
+                            console.warn('⚠️ Error Firebase, creando local:', firebaseError);
+                            newId = 'local-' + Date.now();
+                        }
+                    } else {
+                        newId = 'local-' + Date.now();
+                    }
+                    
+                    // Agregar al array local
+                    albumes.unshift({ id: newId, ...data });
+                }
+
+                // Guardar en localStorage
+                localStorage.setItem('zazaboys_albums_backup', JSON.stringify(albumes));
+                
+                // Mostrar éxito
+                document.getElementById('loadingMsg').style.display = 'none';
+                document.getElementById('successMsg').style.display = 'block';
+                
+                setTimeout(() => {
+                    closeModal('createModal');
+                    limpiarFormulario();
+                    renderAlbumes();
+                }, 1500);
+
+            } catch (error) {
+                console.error('❌ Error guardando:', error);
+                alert('❌ Error al guardar: ' + error.message);
+                
+                btn.disabled = false;
+                btn.innerHTML = textoOriginal;
+                document.getElementById('loadingMsg').style.display = 'none';
+            } finally {
+                guardando = false;
+            }
+        }
+
+        // Comprimir imagen para no saturar localStorage
+        async function comprimirImagen(base64String) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                img.onload = () => {
+                    // Max 800px de ancho
+                    const maxWidth = 800;
+                    const scale = maxWidth / img.width;
+                    const width = img.width > maxWidth ? maxWidth : img.width;
+                    const height = img.width > maxWidth ? img.height * scale : img.height;
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Calidad 0.8 = buen balance calidad/peso
+                    const compressed = canvas.toDataURL('image/jpeg', 0.8);
+                    resolve(compressed);
+                };
+
+                img.src = base64String;
+            });
+        }
+
+        // ==========================================
+        // EDITAR ÁLBUM/CANCIÓN
+        // ==========================================
+        function editarAlbum(id) {
+            if (modoEliminar) {
+                desactivarModoEliminar();
+            }
+
+            const album = albumes.find(a => a.id === id);
+            if (!album) {
+                alert('❌ ÁLBUM/CANCIÓN no encontrado');
+                return;
+            }
+
+            // Limpiar y llenar formulario
+            limpiarFormulario();
+            
+            document.getElementById('albumId').value = id;
+            document.getElementById('modalTitle').textContent = '✏️ Editar ÁLBUM/CANCIÓN';
+            document.getElementById('albumTitle').value = album.title || '';
+            document.getElementById('albumDesc').value = album.description || '';
+            document.getElementById('linkSpotify').value = album.links?.spotify || '';
+            document.getElementById('linkApple').value = album.links?.apple || '';
+            document.getElementById('linkSoundCloud').value = album.links?.soundcloud || '';
+            document.getElementById('linkYouTube').value = album.links?.youtube || '';
+            document.getElementById('linkAudiomack').value = album.links?.audiomack || '';
+
+            // Mostrar imagen si existe
+            if (album.image && album.image !== 'https://i.ibb.co/C5mFsQnb/logozazahousestudiosoriginal.jpg') {
+                fotoTemporal = album.image;
+                document.getElementById('previewImg').src = album.image;
+                document.getElementById('previewImg').style.display = 'block';
+                document.getElementById('fileLabel').innerHTML = '📷 Cambiar imagen actual';
+                document.getElementById('btnQuitarFoto').style.display = 'block';
+            }
+
+            document.getElementById('createModal').classList.add('active');
+        }
+
+        // ==========================================
+        // ELIMINAR ÁLBUM/CANCIÓN
+        // ==========================================
+        function eliminarAlbum(id) {
+            idAEliminar = id;
+            const album = albumes.find(a => a.id === id);
+            
+            document.getElementById('confirmMessage').innerHTML = 
+                `¿Eliminar permanentemente<br><strong style="color: var(--fuxia);">${album?.title || 'este ÁLBUM/CANCIÓN'}</strong>?`;
+            
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        // Configurar botón de confirmación
+        document.getElementById('btnConfirmarSi').addEventListener('click', async () => {
+            if (!idAEliminar) {
+                closeModal('confirmModal');
+                return;
+            }
+
+            const id = idAEliminar;
+            
+            try {
+                // Eliminar de Firebase
+                if (db && !id.startsWith('local-')) {
+                    try {
+                        await db.ref('albums/' + id).remove();
+                        console.log('✅ Eliminado de Firebase');
+                    } catch (firebaseError) {
+                        console.warn('⚠️ Error Firebase al eliminar:', firebaseError);
+                    }
+                }
+                
+                // Eliminar del array local
+                albumes = albumes.filter(a => a.id !== id);
+                localStorage.setItem('zazaboys_albums_backup', JSON.stringify(albumes));
+                
+                console.log('✅ ÁLBUM/CANCIÓN eliminado:', id);
+                
+                idAEliminar = null;
+                closeModal('confirmModal');
+                
+                if (modoEliminar && albumes.length === 0) {
+                    desactivarModoEliminar();
+                }
+                
+                renderAlbumes();
+                
+            } catch (e) {
+                console.error('❌ Error eliminando:', e);
+                alert('❌ Error al eliminar: ' + e.message);
+                idAEliminar = null;
+                closeModal('confirmModal');
+            }
+        });
+
+        // ==========================================
+        // RENDERIZAR ÁLBUM/CANCIÓNES
+        // ==========================================
+        function renderAlbumes() {
+            const container = document.getElementById('albumes-container');
+            
+            if (albumes.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #666; padding: 60px 20px; grid-column: 1/-1;">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">🎵</div>
+                        <p style="font-size: 1.2rem;">No hay ÁLBUM/CANCIÓNes aún</p>
+                        ${isAdmin ? '' : ''}
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = albumes.map(album => {
+                const links = [];
+                
+                if (album.links?.spotify) {
+                    links.push(`<a href="${album.links.spotify}" target="_blank" class="btn-platform btn-spotify">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg" alt="Spotify"> Spotify
+                    </a>`);
+                }
+                if (album.links?.apple) {
+                    links.push(`<a href="${album.links.apple}" target="_blank" class="btn-platform btn-apple">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple"> Apple
+                    </a>`);
+                }
+                if (album.links?.soundcloud) {
+                    links.push(`<a href="${album.links.soundcloud}" target="_blank" class="btn-platform btn-soundcloud">
+                        <img src="https://cdn-icons-png.flaticon.com/512/145/145809.png" alt="SoundCloud"> SoundCloud
+                    </a>`);
+                }
+                if (album.links?.youtube) {
+                    links.push(`<a href="${album.links.youtube}" target="_blank" class="btn-platform btn-youtube">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Youtube_logo.png" alt="YouTube"> YouTube
+                    </a>`);
+                }
+                if (album.links?.audiomack) {
+                    links.push(`<a href="${album.links.audiomack}" target="_blank" class="btn-platform btn-audiomack">
+                        <img src="https://crystalpng.com/wp-content/uploads/2025/03/audiomack_logo.png" alt="Audiomack"> Audiomack
+                    </a>`);
+                }
+
+                // Botones de admin
+                const adminButtons = (isAdmin && !modoEliminar) ? `
+                    <div class="admin-btns">
+                        <button class="admin-btn edit" onclick="event.stopPropagation(); editarAlbum('${album.id}')" title="Editar">✏️</button>
+                        <button class="admin-btn delete" onclick="event.stopPropagation(); eliminarAlbum('${album.id}')" title="Eliminar">🗑️</button>
+                    </div>
+                ` : '';
+
+                // Overlay modo eliminar
+                const eliminarOverlay = modoEliminar ? `
+                    <div class="modo-eliminar-overlay" onclick="eliminarAlbum('${album.id}')">
+                        <span class="modo-eliminar-badge">🗑️ TOCAR PARA ELIMINAR</span>
+                    </div>
+                ` : '';
+
+                return `
+                    <div class="album-zaza ${modoEliminar ? 'modo-eliminar-activo' : ''}">
+                        ${eliminarOverlay}
+                        ${adminButtons}
+                        <div class="album-img-container">
+                            <img src="${album.image}" alt="${album.title}" class="album-img" 
+                                 onerror="this.src='https://i.ibb.co/C5mFsQnb/logozazahousestudiosoriginal.jpg'">
+                            <div class="album-overlay"></div>
+                        </div>
+                        <div class="album-info">
+                            <h3 class="album-title">${album.title}</h3>
+                            <p class="album-desc">${album.description}</p>
+                            <div class="botones-zaza">
+                                ${links.length > 0 ? links.join('') : '<p style="color: #666; font-size: 0.9rem;">Disponible pronto en plataformas</p>'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        // EVENT LISTENERS
+        // ==========================================
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkPassword();
+        });
+
+        // Cerrar modal al hacer clic fuera
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal-overlay')) {
+                event.target.classList.remove('active');
+            }
+        }
+
+        // ==========================================
+        // INICIALIZACIÓN
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎵 ZAZABOYS iniciado');
+            // Intentar cargar desde localStorage mientras Firebase conecta
+            usarDatosLocales();
+        });
+    </script>
+</body>
+</html>

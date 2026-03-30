@@ -1217,35 +1217,10 @@
 
     <!-- Partículas -->
     <div class="particles" id="particles"></div>
-<script>
-  const logoContainer = document.querySelector('.logo-container');
-  let pressTimer;
 
-  logoContainer.addEventListener('mousedown', function() {
-    // Inicia el temporizador al presionar
-    pressTimer = setTimeout(function() {
-      openLoginModal(); // Ejecuta la función después de 2 segundos
-    }, 2000);
-  });
-
-  logoContainer.addEventListener('mouseup', function() {
-    // Cancela el temporizador si se suelta antes de los 2 segundos
-    clearTimeout(pressTimer);
-  });
-
-  logoContainer.addEventListener('mouseleave', function() {
-    // Cancela también si el cursor sale del contenedor
-    clearTimeout(pressTimer);
-  });
-
-  // Ejemplo de la función (puedes reemplazarla con tu lógica real)
-  function openLoginModal() {
-    alert("Login Modal abierto!");
-  }
-</script>
     <!-- Header ZAZABOYS -->
     <header class="zaza-header">
-        <div onclick="openLoginModal()" class="logo-container">
+        <div class="logo-container">
             <img src="https://i.ibb.co/C5mFsQnb/logozazahousestudiosoriginal.jpg" alt="ZAZABOYS Logo" class="logo-img">
         </div>
         <h1 class="zaza-title">ZAZABOYS</h1>
@@ -1806,7 +1781,7 @@ videoContainer.addEventListener('mouseleave', () => {
 const firebaseConfig = {
     apiKey: "AIzaSyDgsdb0dO0oedOMw3HZLzOpzar5Z76Zq74",
     authDomain: "zazahousestudios-8b7ca.firebaseapp.com",
-    databaseURL: "https://zazahousestudios-8b7ca-default-rtdb.firebaseio.com",
+    databaseURL: "https://zazahousestudios-default-rtdb.firebaseio.com/",
     projectId: "zazahousestudios-8b7ca",
     storageBucket: "zazahousestudios-8b7ca.appspot.com",
     messagingSenderId: "560815486667",
@@ -1826,6 +1801,28 @@ let idAEliminar = null;
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🎵 ZAZABOYS iniciado');
     
+    // Recuperar estado admin de la sesión
+    if (sessionStorage.getItem('zaza_admin') === 'true') {
+        isAdmin = true;
+        console.log('👑 Modo administrador restaurado');
+    }
+
+    // Configurar el logo para abrir el modal de login con pulsación larga
+    const logoContainer = document.querySelector('.logo-container');
+    if (logoContainer) {
+        let pressTimer;
+        logoContainer.addEventListener('mousedown', function() {
+            pressTimer = setTimeout(() => openLoginModal(), 2000);
+        });
+        logoContainer.addEventListener('mouseup', () => clearTimeout(pressTimer));
+        logoContainer.addEventListener('mouseleave', () => clearTimeout(pressTimer));
+        // Soporte táctil
+        logoContainer.addEventListener('touchstart', function() {
+            pressTimer = setTimeout(() => openLoginModal(), 2000);
+        });
+        logoContainer.addEventListener('touchend', () => clearTimeout(pressTimer));
+    }
+
     try {
         // Verificar si Firebase ya está inicializado
         if (!firebase.apps.length) {
@@ -1968,8 +1965,10 @@ function usarDatosLocales() {
             const password = document.getElementById('passwordInput').value;
             if (password === '1109') {
                 isAdmin = true;
+                sessionStorage.setItem('zaza_admin', 'true');
                 closeModal('loginModal');
                 openCreateModal();
+                renderAlbumes(); // Volver a renderizar para mostrar botones de edición
             } else {
                 const errorMsg = document.getElementById('errorMsg');
                 errorMsg.style.display = 'block';
@@ -2139,7 +2138,11 @@ async function guardarAlbum() {
 
     } catch (error) {
         console.error('❌ Error guardando:', error);
-        alert('❌ Error al guardar: ' + error.message);
+        if (error.message.includes('permission_denied') || error.message.includes('PERMISSION_DENIED')) {
+            alert('❌ ERROR DE PERMISOS: No tienes permiso para escribir en la base de datos. \n\nPor favor, asegúrate de que las Reglas de Firebase en la consola permitan escritura pública o que estés autenticado.');
+        } else {
+            alert('❌ Error al guardar: ' + error.message);
+        }
         
         btn.disabled = false;
         btn.innerHTML = textoOriginal;
@@ -2279,7 +2282,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 
             } catch (e) {
                 console.error('❌ Error eliminando:', e);
-                alert('❌ Error al eliminar: ' + e.message);
+                if (e.message.includes('permission_denied') || e.message.includes('PERMISSION_DENIED')) {
+                    alert('❌ ERROR DE PERMISOS: No tienes permiso para eliminar en la base de datos.');
+                } else {
+                    alert('❌ Error al eliminar: ' + e.message);
+                }
                 idAEliminar = null;
                 closeModal('confirmModal');
             }

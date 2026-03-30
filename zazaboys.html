@@ -1201,7 +1201,11 @@
 
     <!-- Debug info -->
     <div class="debug-info" id="debugInfo">
-        ZAZABOYS
+        ZAZABOYS <!-- Elementos ocultos para estado de Firebase -->
+<div style="display: none;">
+    <span id="firebaseStatus">Desconectado</span>
+    <span id="albumCount">0</span>
+</div>
     </div>
 
     <!-- Efectos de humo -->
@@ -1796,74 +1800,113 @@ videoContainer.addEventListener('mouseleave', () => {
 
     <script>
         // ==========================================
-        // CONFIGURACIÓN FIREBASE
-        // ==========================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyDgsdb0dO0oedOMw3HZLzOpzar5Z76Zq74",
-            authDomain: "zazahousestudios-8b7ca.firebaseapp.com",
-            databaseURL: "https://zazahousestudios-default-rtdb.firebaseio.com",
-            projectId: "zazahousestudios-8b7ca",
-            storageBucket: "zazahousestudios-8b7ca.appspot.com",
-            messagingSenderId: "560815486667",
-            appId: "1:560815486667:web:f521727dd900f255f28d4e"
-        };
+       // ==========================================
+// CONFIGURACIÓN FIREBASE - CORREGIDO
+// ==========================================
+const firebaseConfig = {
+    apiKey: "AIzaSyDgsdb0dO0oedOMw3HZLzOpzar5Z76Zq74",
+    authDomain: "zazahousestudios-8b7ca.firebaseapp.com",
+    databaseURL: "https://zazahousestudios-8b7ca-default-rtdb.firebaseio.com",
+    projectId: "zazahousestudios-8b7ca",
+    storageBucket: "zazahousestudios-8b7ca.appspot.com",
+    messagingSenderId: "560815486667",
+    appId: "1:560815486667:web:f521727dd900f255f28d4e"
+};
 
-        // Inicializar Firebase
-        let app, db;
-        let albumes = [];
-        let isAdmin = false;
-        let modoEliminar = false;
-        let fotoTemporal = null;
-        let guardando = false;
-        let idAEliminar = null;
+// Variables globales
+let app, db;
+let albumes = [];
+let isAdmin = false;
+let modoEliminar = false;
+let fotoTemporal = null;
+let guardando = false;
+let idAEliminar = null;
 
-        try {
+// Inicializar Firebase cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🎵 ZAZABOYS iniciado');
+    
+    try {
+        // Verificar si Firebase ya está inicializado
+        if (!firebase.apps.length) {
             app = firebase.initializeApp(firebaseConfig);
-            db = firebase.database();
+        } else {
+            app = firebase.app();
+        }
+        
+        db = firebase.database();
+        console.log('✅ Firebase inicializado correctamente');
+        
+        // Actualizar estado en UI (si existe el elemento)
+        const statusEl = document.getElementById('firebaseStatus');
+        if (statusEl) {
+            statusEl.textContent = 'Conectado';
+            statusEl.style.color = 'var(--verde)';
+        }
+        
+        // Escuchar cambios en tiempo real
+        db.ref('albums').on('value', (snapshot) => {
+            console.log('📡 Datos recibidos de Firebase:', snapshot.val());
             
-            console.log('✅ Firebase inicializado');
-            document.getElementById('firebaseStatus').textContent = 'Conectado';
-            document.getElementById('firebaseStatus').style.color = 'var(--verde)';
-            
-            // Escuchar cambios en tiempo real
-            db.ref('albums').on('value', (snapshot) => {
-                const nuevosAlbumes = [];
-                if (snapshot.exists()) {
-                    snapshot.forEach((child) => {
-                        nuevosAlbumes.push({ id: child.key, ...child.val() });
+            const nuevosAlbumes = [];
+            if (snapshot.exists()) {
+                snapshot.forEach((child) => {
+                    nuevosAlbumes.push({ 
+                        id: child.key, 
+                        ...child.val() 
                     });
-                    // Ordenar por fecha de creación (más reciente primero)
-                    nuevosAlbumes.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-                }
-                albumes = nuevosAlbumes;
-                localStorage.setItem('zazaboys_albums_backup', JSON.stringify(albumes));
-                document.getElementById('albumCount').textContent = albumes.length;
-                renderAlbumes();
-            }, (error) => {
-                console.warn('⚠️ Error Firebase, usando localStorage:', error);
-                usarDatosLocales();
-            });
-
-        } catch (error) {
-            console.error('❌ Error inicializando Firebase:', error);
-            document.getElementById('firebaseStatus').textContent = 'Error';
-            document.getElementById('firebaseStatus').style.color = '#ff4444';
-            usarDatosLocales();
-        }
-
-        // Cargar desde localStorage como backup
-        function usarDatosLocales() {
-            try {
-                const backup = localStorage.getItem('zazaboys_albums_backup');
-                if (backup) {
-                    albumes = JSON.parse(backup);
-                    renderAlbumes();
-                }
-            } catch (e) {
-                console.error('Error localStorage:', e);
+                });
+                // Ordenar por fecha de creación (más reciente primero)
+                nuevosAlbumes.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
             }
-        }
+            
+            albumes = nuevosAlbumes;
+            console.log('📀 Álbumes cargados:', albumes.length);
+            
+            // Guardar backup en localStorage
+            localStorage.setItem('zazaboys_albums_backup', JSON.stringify(albumes));
+            
+            // Actualizar contador
+            const countEl = document.getElementById('albumCount');
+            if (countEl) countEl.textContent = albumes.length;
+            
+            renderAlbumes();
+            
+        }, (error) => {
+            console.error('❌ Error en tiempo real:', error);
+            usarDatosLocales();
+        });
 
+    } catch (error) {
+        console.error('❌ Error inicializando Firebase:', error);
+        const statusEl = document.getElementById('firebaseStatus');
+        if (statusEl) {
+            statusEl.textContent = 'Error: ' + error.message;
+            statusEl.style.color = '#ff4444';
+        }
+        usarDatosLocales();
+    }
+    
+    // Crear partículas
+    createParticles();
+});
+
+// Cargar desde localStorage como backup
+function usarDatosLocales() {
+    try {
+        const backup = localStorage.getItem('zazaboys_albums_backup');
+        if (backup) {
+            albumes = JSON.parse(backup);
+            console.log('💾 Cargando desde localStorage:', albumes.length, 'álbumes');
+            renderAlbumes();
+        } else {
+            renderAlbumes(); // Renderizar vacío
+        }
+    } catch (e) {
+        console.error('Error localStorage:', e);
+        renderAlbumes();
+    }
+}
         // ==========================================
         // EFECTOS VISUALES
         // ==========================================
@@ -2003,136 +2046,108 @@ videoContainer.addEventListener('mouseleave', () => {
         }
 
         // ==========================================
-        // GUARDAR ÁLBUM/CANCIÓN (CREAR O EDITAR)
-        // ==========================================
-        async function guardarAlbum() {
-            if (guardando) {
-                console.log('⏳ Ya se está guardando...');
-                return;
+ // ==========================================
+// GUARDAR ÁLBUM/CANCIÓN (CREAR O EDITAR) - CORREGIDO
+// ==========================================
+async function guardarAlbum() {
+    if (guardando) {
+        console.log('⏳ Ya se está guardando...');
+        return;
+    }
+
+    const id = document.getElementById('albumId').value;
+    const esEdicion = !!id;
+    const titulo = document.getElementById('albumTitle').value.trim();
+
+    if (!titulo) {
+        alert('⚠️ El nombre del ÁLBUM/CANCIÓN es obligatorio');
+        document.getElementById('albumTitle').focus();
+        return;
+    }
+
+    // Verificar conexión a Firebase
+    if (!db) {
+        alert('❌ No hay conexión a la base de datos. Intenta recargar la página.');
+        return;
+    }
+
+    guardando = true;
+    const btn = document.getElementById('saveAlbumBtn');
+    const textoOriginal = btn.innerHTML;
+    btn.innerHTML = '⏳ Guardando...';
+    btn.disabled = true;
+    document.getElementById('loadingMsg').style.display = 'block';
+    document.getElementById('successMsg').style.display = 'none';
+
+    try {
+        // Preparar datos
+        const data = {
+            title: titulo,
+            description: document.getElementById('albumDesc').value.trim() || 'Sin descripción',
+            links: {
+                spotify: document.getElementById('linkSpotify').value.trim() || '',
+                apple: document.getElementById('linkApple').value.trim() || '',
+                soundcloud: document.getElementById('linkSoundCloud').value.trim() || '',
+                youtube: document.getElementById('linkYouTube').value.trim() || '',
+                audiomack: document.getElementById('linkAudiomack').value.trim() || ''
+            },
+            updatedAt: firebase.database.ServerValue.TIMESTAMP // Usar timestamp del servidor
+        };
+
+        // Manejar imagen
+        if (fotoTemporal) {
+            data.image = await comprimirImagen(fotoTemporal);
+        } else if (esEdicion) {
+            const existente = albumes.find(a => a.id === id);
+            if (existente?.image) {
+                data.image = existente.image;
+            } else {
+                data.image = 'https://i.ibb.co/C5mFsQnb/logozazahousestudiosoriginal.jpg';
             }
-
-            const id = document.getElementById('albumId').value;
-            const esEdicion = !!id;
-            const titulo = document.getElementById('albumTitle').value.trim();
-
-            if (!titulo) {
-                alert('⚠️ El nombre del ÁLBUM/CANCIÓN es obligatorio');
-                document.getElementById('albumTitle').focus();
-                return;
-            }
-
-            guardando = true;
-            const btn = document.getElementById('saveAlbumBtn');
-            const textoOriginal = btn.innerHTML;
-            btn.innerHTML = '⏳ Guardando...';
-            btn.disabled = true;
-            document.getElementById('loadingMsg').style.display = 'block';
-            document.getElementById('successMsg').style.display = 'none';
-
-            try {
-                // Preparar datos
-                const data = {
-                    title: titulo,
-                    description: document.getElementById('albumDesc').value.trim() || 'Sin descripción',
-                    links: {
-                        spotify: document.getElementById('linkSpotify').value.trim() || '',
-                        apple: document.getElementById('linkApple').value.trim() || '',
-                        soundcloud: document.getElementById('linkSoundCloud').value.trim() || '',
-                        youtube: document.getElementById('linkYouTube').value.trim() || '',
-                        audiomack: document.getElementById('linkAudiomack').value.trim() || ''
-                    },
-                    updatedAt: Date.now()
-                };
-
-                // Manejar imagen
-                if (fotoTemporal) {
-                    // Comprimir imagen antes de guardar
-                    data.image = await comprimirImagen(fotoTemporal);
-                } else if (esEdicion) {
-                    // Mantener imagen existente
-                    const existente = albumes.find(a => a.id === id);
-                    if (existente?.image) {
-                        data.image = existente.image;
-                    } else {
-                        data.image = 'https://i.ibb.co/C5mFsQnb/logozazahousestudiosoriginal.jpg';
-                    }
-                } else {
-                    // Imagen por defecto
-                    data.image = 'https://i.ibb.co/C5mFsQnb/logozazahousestudiosoriginal.jpg';
-                }
-
-                if (esEdicion) {
-                    // ========== EDITAR ==========
-                    console.log('✏️ Editando ÁLBUM/CANCIÓN:', id);
-                    
-                    // Actualizar en Firebase
-                    if (db && !id.startsWith('local-')) {
-                        try {
-                            await db.ref('albums/' + id).update(data);
-                            console.log('✅ Actualizado en Firebase');
-                        } catch (firebaseError) {
-                            console.warn('⚠️ Error Firebase:', firebaseError);
-                        }
-                    }
-                    
-                    // Actualizar en array local
-                    const idx = albumes.findIndex(a => a.id === id);
-                    if (idx >= 0) {
-                        albumes[idx] = { ...albumes[idx], ...data };
-                    }
-                    
-                } else {
-                    // ========== CREAR NUEVO ==========
-                    console.log('🎵 Creando nuevo ÁLBUM/CANCIÓN');
-                    
-                    data.createdAt = Date.now();
-                    
-                    let newId;
-                    
-                    // Intentar crear en Firebase
-                    if (db) {
-                        try {
-                            const nuevoRef = db.ref('albums').push();
-                            await nuevoRef.set(data);
-                            newId = nuevoRef.key;
-                            console.log('✅ Creado en Firebase:', newId);
-                        } catch (firebaseError) {
-                            console.warn('⚠️ Error Firebase, creando local:', firebaseError);
-                            newId = 'local-' + Date.now();
-                        }
-                    } else {
-                        newId = 'local-' + Date.now();
-                    }
-                    
-                    // Agregar al array local
-                    albumes.unshift({ id: newId, ...data });
-                }
-
-                // Guardar en localStorage
-                localStorage.setItem('zazaboys_albums_backup', JSON.stringify(albumes));
-                
-                // Mostrar éxito
-                document.getElementById('loadingMsg').style.display = 'none';
-                document.getElementById('successMsg').style.display = 'block';
-                
-                setTimeout(() => {
-                    closeModal('createModal');
-                    limpiarFormulario();
-                    renderAlbumes();
-                }, 1500);
-
-            } catch (error) {
-                console.error('❌ Error guardando:', error);
-                alert('❌ Error al guardar: ' + error.message);
-                
-                btn.disabled = false;
-                btn.innerHTML = textoOriginal;
-                document.getElementById('loadingMsg').style.display = 'none';
-            } finally {
-                guardando = false;
-            }
+        } else {
+            data.image = 'https://i.ibb.co/C5mFsQnb/logozazahousestudiosoriginal.jpg';
         }
 
+        if (esEdicion) {
+            // ========== EDITAR ==========
+            console.log('✏️ Editando ÁLBUM/CANCIÓN:', id);
+            
+            await db.ref('albums/' + id).update(data);
+            console.log('✅ Actualizado en Firebase');
+            
+        } else {
+            // ========== CREAR NUEVO ==========
+            console.log('🎵 Creando nuevo ÁLBUM/CANCIÓN');
+            
+            data.createdAt = firebase.database.ServerValue.TIMESTAMP;
+            
+            // Crear referencia con push() para obtener ID único
+            const nuevoRef = db.ref('albums').push();
+            await nuevoRef.set(data);
+            console.log('✅ Creado en Firebase con ID:', nuevoRef.key);
+        }
+
+        // Mostrar éxito
+        document.getElementById('loadingMsg').style.display = 'none';
+        document.getElementById('successMsg').style.display = 'block';
+        
+        setTimeout(() => {
+            closeModal('createModal');
+            limpiarFormulario();
+            // No necesitas llamar renderAlbumes() aquí porque el listener en tiempo real lo hará automáticamente
+        }, 1500);
+
+    } catch (error) {
+        console.error('❌ Error guardando:', error);
+        alert('❌ Error al guardar: ' + error.message);
+        
+        btn.disabled = false;
+        btn.innerHTML = textoOriginal;
+        document.getElementById('loadingMsg').style.display = 'none';
+    } finally {
+        guardando = false;
+    }
+}
         // Comprimir imagen para no saturar localStorage
         async function comprimirImagen(base64String) {
             return new Promise((resolve) => {
@@ -2202,19 +2217,42 @@ videoContainer.addEventListener('mouseleave', () => {
         // ==========================================
         // ELIMINAR ÁLBUM/CANCIÓN
         // ==========================================
-        function eliminarAlbum(id) {
-            idAEliminar = id;
-            const album = albumes.find(a => a.id === id);
-            
-            document.getElementById('confirmMessage').innerHTML = 
-                `¿Eliminar permanentemente<br><strong style="color: var(--fuxia);">${album?.title || 'este ÁLBUM/CANCIÓN'}</strong>?`;
-            
-            document.getElementById('confirmModal').classList.add('active');
-        }
+      // ==========================================
+// ELIMINAR ÁLBUM/CANCIÓN - CORREGIDO
+// ==========================================
+function eliminarAlbum(id) {
+    if (!id) {
+        console.error('❌ ID no proporcionado para eliminar');
+        return;
+    }
+    
+    idAEliminar = id;
+    const album = albumes.find(a => a.id === id);
+    
+    const confirmMsg = document.getElementById('confirmMessage');
+    if (confirmMsg) {
+        confirmMsg.innerHTML = 
+            `¿Eliminar permanentemente<br><strong style="color: var(--fuxia);">${album?.title || 'este ÁLBUM/CANCIÓN'}</strong>?`;
+    }
+    
+    document.getElementById('confirmModal').classList.add('active');
+}
 
-        // Configurar botón de confirmación
-        document.getElementById('btnConfirmarSi').addEventListener('click', async () => {
+// Configurar botón de confirmación UNA VEZ (mover fuera de cualquier función)
+document.addEventListener('DOMContentLoaded', function() {
+    const btnConfirmar = document.getElementById('btnConfirmarSi');
+    if (btnConfirmar) {
+        btnConfirmar.addEventListener('click', async function() {
+            console.log('🗑️ Confirmando eliminación de:', idAEliminar);
+            
             if (!idAEliminar) {
+                console.error('❌ No hay ID para eliminar');
+                closeModal('confirmModal');
+                return;
+            }
+
+            if (!db) {
+                alert('❌ No hay conexión a la base de datos');
                 closeModal('confirmModal');
                 return;
             }
@@ -2223,20 +2261,12 @@ videoContainer.addEventListener('mouseleave', () => {
             
             try {
                 // Eliminar de Firebase
-                if (db && !id.startsWith('local-')) {
-                    try {
-                        await db.ref('albums/' + id).remove();
-                        console.log('✅ Eliminado de Firebase');
-                    } catch (firebaseError) {
-                        console.warn('⚠️ Error Firebase al eliminar:', firebaseError);
-                    }
-                }
+                await db.ref('albums/' + id).remove();
+                console.log('✅ Eliminado de Firebase:', id);
                 
-                // Eliminar del array local
+                // Actualizar array local
                 albumes = albumes.filter(a => a.id !== id);
                 localStorage.setItem('zazaboys_albums_backup', JSON.stringify(albumes));
-                
-                console.log('✅ ÁLBUM/CANCIÓN eliminado:', id);
                 
                 idAEliminar = null;
                 closeModal('confirmModal');
@@ -2245,7 +2275,7 @@ videoContainer.addEventListener('mouseleave', () => {
                     desactivarModoEliminar();
                 }
                 
-                renderAlbumes();
+                // No necesitas llamar renderAlbumes() aquí porque el listener lo hará
                 
             } catch (e) {
                 console.error('❌ Error eliminando:', e);
@@ -2254,6 +2284,8 @@ videoContainer.addEventListener('mouseleave', () => {
                 closeModal('confirmModal');
             }
         });
+    }
+});
 
         // ==========================================
         // RENDERIZAR ÁLBUM/CANCIÓNES
